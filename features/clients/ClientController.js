@@ -1,11 +1,6 @@
-const AWS = require("aws-sdk");
+
 const bcrypt = require("bcrypt");
-
-AWS.config.update({
-    region: "eu-west-1"
-});
-
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const Model = require('../../models');
 
 
 async function saveClient(data){
@@ -21,27 +16,18 @@ async function saveClient(data){
 
 async function loginClient(data){
     try{
-        let params = {
-            TableName:"clients",
-            FilterExpression:"#username = :username",
-            ExpressionAttributeNames:{
-               "#username":"username"
-            },
-            ExpressionAttributeValues:{
-                ":username":data.username
-            }
-        };
 
-        let result = await dynamoDb.scan(params).promise();
-        if(result.Items.length > 0){
-            const myClient = result.Items[0];
-            const isPasswordOk = await bcrypt.compare(data.password,myClient.password);
-            if(isPasswordOk){
-                return true;
-            }
-            else{
-                throw "invalid password"
-            }
+        let result = await Device.findOne({where:{imei:data.imei,password: data.password}});
+        if(result){
+            await Device.update(
+                {
+                  clientId: data.clientId
+                },
+                {
+                  where:{imei:data.imei,password: data.password}
+                }
+            )
+            return true;
         }
         else{
             throw "invalid username"
