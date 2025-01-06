@@ -1,18 +1,36 @@
 const aedes = require("aedes")();
+const http = require('http');
 const net = require("net");
 const ClientControl = require("./features/clients/ClientController");
 const DeviceController = require("./features/devices/Controller");
 const { rejects } = require("assert");
+const WebSocket = require('ws')
+
+const devicePort = 4200;
+const wsPort = 8080;
 
 
-const server = net.createServer(aedes.handle);
 
-server.listen({
-    host: "199.192.25.155",
-    port: 4200
-},function(){
-     console.log("server listening at port 4200");
+
+const tcpServer = net.createServer((socket) => {
+    console.log('TCP client connected');
+    aedes.handle(socket);
 });
+
+const httpServer = http.createServer();
+
+
+
+const wss = new WebSocket.Server({server: httpServer });
+
+wsServer.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+    const stream = WebSocket.createWebSocketStream(ws);
+    aedes.handle(stream);
+});
+
+
+
 
 
 // when a new client connects
@@ -783,3 +801,18 @@ aedes.authenticate = async function (client, imei, password, callback) {
       callback(null, false); // Authentication failed
     }
 };
+
+
+tcpServer.listen({
+    host: "199.192.25.155",
+    port: devicePort
+},function(){
+     console.log("server listening at port 4200");
+});
+
+httpServer.listen({
+    host: "199.192.25.155",
+    port: wsPort
+},function(){
+     console.log("server listening at port "+ wsPort);
+});
