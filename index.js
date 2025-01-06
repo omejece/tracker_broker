@@ -21,7 +21,7 @@ const httpServer = http.createServer();
 
 
 
-const wss = new WebSocket.Server({server: httpServer });
+const wsServer  = new WebSocket.Server({server: httpServer });
 
 wsServer.on('connection', (ws) => {
     console.log('WebSocket client connected');
