@@ -7,7 +7,7 @@ const { rejects } = require("assert");
 const WebSocket = require('ws')
 
 const devicePort = 4200;
-const wsPort = 8080;
+const wsPort = 8000;
 
 
 
