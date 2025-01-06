@@ -27,6 +27,16 @@ aedes.on("subscribe",async function(subscription,client){
 });
 
 
+aedes.on('subscribe', (subscriptions, client) => {
+    subscriptions.forEach((subscription) => {
+      console.log(
+        `Client ${client ? client.id : 'Unknown'} subscribed to topic: ${
+          subscription.topic
+        } with QoS: ${subscription.qos}`
+      );
+    });
+});
+
 function messageClient({topic,data}){
    return new Promise((resolve,rejects)=>{
         try{
@@ -320,6 +330,21 @@ aedes.on("publish",async function(packet,client){
             else if(deviceData.action == "confirmReadAuthPhone"){
                 DeviceController.handleDeviceRespose(deviceData).then(()=>{
                     var outData = {...deviceData,action:'confirmReadAuthPhone'};
+                    messageClient({
+                       topic:`user/${deviceData.imei}`,
+                       data: outData
+                    }).then((resp)=>{
+                        console.log("successfull");
+                    }).catch(err=>{
+                        console.log(err);
+                    });
+                 }).catch(err=>{
+                    console.log(err);
+                 });
+            }
+            else if(deviceData.action == "positionReport"){
+                DeviceController.handleDeviceRespose(deviceData).then(()=>{
+                    var outData = {...deviceData,action:'positionReport'};
                     messageClient({
                        topic:`user/${deviceData.imei}`,
                        data: outData
@@ -749,6 +774,7 @@ aedes.authenticate = async function (client, imei, password, callback) {
     console.log(`Password: ${passwordStr}`);
 
     const loginStatus = ClientControl.loginClient({username: imei,password: password,clientId: client.id});
+    callback(null, true);
   
     // Example authentication logic (always accept the connection)
     if (loginStatus) {

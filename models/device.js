@@ -49,7 +49,10 @@ module.exports = (sequelize, DataTypes) => {
     isAssigned: DataTypes.INTEGER,
     fenceType: DataTypes.STRING,
     alarmType: DataTypes.INTEGER,
-    fenceName: DataTypes.STRING
+    fenceName: DataTypes.STRING,
+    longitude: DataTypes.DOUBLE,
+    latitude: DataTypes.DOUBLE,
+    meta: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'Device',
